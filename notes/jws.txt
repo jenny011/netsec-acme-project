@@ -1,0 +1,36 @@
+All ACME requests with a non-empty body MUST encapsulate their
+   payload in a JSON Web Signature (JWS)
+signed using the account's private key
+
+The JWS MUST be in the Flattened JSON Serialization
+
+The JWS Protected Header MUST include the following fields:
+      *  "alg" (Algorithm)
+         +  This field MUST NOT contain "none" or a Message
+            Authentication Code (MAC) algorithm (e.g. one in which the
+            algorithm registry description mentions MAC/HMAC).
+      *  "nonce" (defined in Section 6.5)
+      *  "url" (defined in Section 6.4)
+
+      * Either "jwk" (JSON Web Key) or "kid" (Key ID) as specified below
+        For newAccount requests, and for revokeCert requests authenticated by a certificate key, there MUST be a "jwk" field.  This field MUST contain the public key corresponding to the private key used to sign the JWS.
+
+		For all other requests, the request is signed using an existing account, and there MUST be a "kid" field.  This field MUST contain the account URL received by POSTing to the newAccount resource.
+
+
+JWS Signing Input [5]
+      The input to the digital signature or MAC computation.  Its value
+      is ASCII(BASE64URL(UTF8(JWS Protected Header)) || '.' ||
+      BASE64URL(JWS Payload)).
+
+
+7.2.2.  Flattened JWS JSON Serialization Syntax [20]
+{
+      "payload":"<payload contents>",
+      "protected":"<integrity-protected header contents>",
+      "header":<non-integrity-protected header contents>,
+      "signature":"<signature contents>"
+     }
+
+
+the Content-Type header field setto "application/jose+json"
